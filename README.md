@@ -6,7 +6,7 @@ Offline Intelligence is a polished take-home prototype for turning inconsistent 
 
 ## Screenshots
 
-Run the app, then capture the dashboard, a duplicate comparison, an applicant breakdown, and an introduction card at desktop width. For a mobile view, use a 390 × 844 viewport; the people table becomes touch-friendly profile cards and navigation moves into a drawer.
+![Offline Intelligence dashboard](public/image.png)
 
 ## Main capabilities
 
