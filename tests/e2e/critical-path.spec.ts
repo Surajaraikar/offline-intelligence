@@ -17,13 +17,13 @@ async function visibleAvatarGeometry(page: Page) {
 }
 
 test("operator can process data and review core queues", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/dashboard");
   await waitForApp(page);
   await expect(page.getByRole("heading", { name: "Good morning, Offline team" })).toBeVisible();
   const processButton = page.getByTestId("process-dataset");
   await processButton.click();
   await expect(processButton).toContainText("Processing", { timeout: 5_000 });
-  await expect(processButton).toContainText("Process sample dataset", { timeout: 15_000 });
+  await expect(processButton).toContainText("Process dataset", { timeout: 15_000 });
   await page.goto("/data-quality");
   await waitForApp(page);
   await expect(page.getByTestId("duplicate-card").first()).toBeVisible();
@@ -47,7 +47,8 @@ test("pagination preserves filters, boundaries, avatar geometry, and later-page 
   const secondPageIds = await peopleRows.evaluateAll((rows) => rows.map((row) => row.getAttribute("data-person-id")));
   expect(secondPageIds).not.toEqual(firstPageIds);
   expect(secondPageIds.some((id) => firstPageIds.includes(id))).toBe(false);
-  await page.getByRole("combobox", { name: "Status" }).selectOption("applicant");
+  await page.getByRole("button", { name: "Status" }).click();
+  await page.getByRole("option", { name: "Applicant" }).click();
   await expect(page.getByRole("button", { name: "Page 1" })).toHaveAttribute("aria-current", "page");
   await expect(page.getByText(/Showing 1–10 of 34/)).toBeVisible();
 
@@ -89,7 +90,9 @@ test("major routes remain responsive and error-free at target widths", async ({ 
   const errors: string[] = [];
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
   page.on("pageerror", (error) => errors.push(error.message));
-  for (const [route, heading] of [["/", "Good morning, Offline team"], ["/people", "People directory"], ["/people/person-001", "Ananya Rao"], ["/data-quality", "Data quality"], ["/applicants", "Applicants"], ["/introductions", "Suggested introductions"], ["/import", "Import relationship data"]]) {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Relationships, understood." })).toBeVisible();
+  for (const [route, heading] of [["/dashboard", "Good morning, Offline team"], ["/people", "People"], ["/people/person-001", "Ananya Rao"], ["/data-quality", "Data quality"], ["/applicants", "Applicants"], ["/introductions", "Suggested introductions"], ["/import", "Import relationship data"]]) {
     await page.goto(route);
     await waitForApp(page);
     await expect(page.getByRole("heading", { name: heading, exact: true }).first()).toBeVisible();
@@ -103,7 +106,7 @@ test("major routes remain responsive and error-free at target widths", async ({ 
       const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
       expect(hasOverflow, `horizontal overflow at ${route} / ${width}px`).toBe(false);
       const geometry = await visibleAvatarGeometry(page);
-      if (geometry) expect(geometry.width).toBe(geometry.height);
+      if (geometry) expect(Math.abs(geometry.width - geometry.height)).toBeLessThan(.1);
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });

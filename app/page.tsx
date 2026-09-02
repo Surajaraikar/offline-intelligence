@@ -1,54 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, CircleCheck, DatabaseZap, Network, RefreshCw, UserCheck, UsersRound } from "lucide-react";
-import { useApp } from "@/components/app-provider";
-import { Badge, PageHeader, PersonLink, ProgressBar } from "@/components/ui";
-import type { ProcessingStage } from "@/types";
+import { ArrowDown, ArrowRight, CircleUserRound } from "lucide-react";
+import { AmbientGlow } from "@/components/premium-effects";
+import { OfflineMark } from "@/components/brand/OfflineMark";
 
-const stageInfo: Array<{ key: ProcessingStage; label: string }> = [
-  { key: "normalizing", label: "Normalizing" }, { key: "quality", label: "Checking data quality" }, { key: "classifying", label: "Classifying profiles" }, { key: "scoring", label: "Calculating fit" }, { key: "matching", label: "Generating introductions" }, { key: "complete", label: "Complete" },
-];
-
-export default function DashboardPage() {
-  const { people, duplicates, introductions, activity, stage, processDataset } = useApp();
-  const applicants = people.filter((p) => p.lifecycleStatus === "applicant");
-  const strong = applicants.filter((p) => (p.fitScore || 0) >= 80);
-  const incomplete = people.filter((p) => p.completenessScore < 70);
-  const pendingDuplicates = duplicates.filter((d) => d.status === "pending");
-  const suggested = introductions.filter((i) => i.status === "suggested");
-  const completeness = people.length ? Math.round(people.reduce((sum, p) => sum + p.completenessScore, 0) / people.length) : 0;
-  const processing = !["idle", "complete"].includes(stage);
-
-  return <div className="page dashboard-page">
-    <div className="demo-banner"><span><DatabaseZap size={16} /> Fictional demonstration data</span><small>All names, companies and contact details are synthetic.</small></div>
-    <PageHeader eyebrow="Relationship operations" title="Good morning, Offline team" description="See who needs attention, which applicants stand out, and where a thoughtful introduction could help." action={<button className="button button-primary" onClick={() => void processDataset()} disabled={processing} data-testid="process-dataset">{processing ? <RefreshCw className="spin" size={17} /> : <DatabaseZap size={17} />}{processing ? "Processing…" : "Process sample dataset"}</button>} />
-
-    {processing && <section className="processing-card" aria-live="polite"><div><span className="processing-icon"><RefreshCw className="spin" size={20} /></span><div><strong>Processing your relationship graph</strong><p>Deterministic checks run first; Demo AI handles unstructured context.</p></div></div><div className="stage-list">{stageInfo.map((item, index) => { const activeIndex = stageInfo.findIndex((s) => s.key === stage); return <span key={item.key} className={index < activeIndex ? "done" : index === activeIndex ? "active" : ""}>{index < activeIndex ? "✓" : index + 1}<small>{item.label}</small></span>; })}</div></section>}
-
-    <section className="metric-grid" aria-label="Key metrics">
-      <Metric label="Total people" value={people.length} detail="Across 4 lifecycle stages" icon={<UsersRound />} />
-      <Metric label="New applicants" value={applicants.length} detail="Awaiting human review" icon={<UserCheck />} />
-      <Metric label="Strong fit" value={strong.length} detail="Scored 80 or higher" icon={<CircleCheck />} tone="good" />
-      <Metric label="Possible duplicates" value={pendingDuplicates.length} detail="Never auto-merged" icon={<AlertTriangle />} tone="warn" />
-      <Metric label="Incomplete profiles" value={incomplete.length} detail="Below 70% complete" icon={<AlertTriangle />} />
-      <Metric label="Suggested intros" value={suggested.length} detail="Require your approval" icon={<Network />} tone="accent" />
+export default function LandingPage() {
+  return <main className="landing landing-editorial"><AmbientGlow landing />
+    <nav className="landing-nav"><Link href="/" className="landing-brand" aria-label="Offline Intelligence home"><OfflineMark size={44} /></Link><div className="landing-actions"><Link className="nav-cta" href="/dashboard">Open dashboard <ArrowRight size={14} /></Link><Link className="landing-system-icon" href="/dashboard" aria-label="View system"><CircleUserRound size={18} /></Link></div></nav>
+    <section className="editorial-hero">
+      <div className="editorial-side editorial-side-left"><p>AI-native relationship intelligence<br />for curated founder communities.</p><div className="avatar-stack"><i>AR</i><i>RM</i><i>MS</i><i>AK</i></div><strong>72 structured relationships</strong></div>
+      <div className="editorial-copy"><p className="hero-kicker"><i /> Relationship intelligence</p><h1><span>Relationships,</span><br /><em>understood.</em></h1><p className="hero-copy">AI-native intelligence for the people, applications and introductions that matter.</p><div className="hero-actions"><Link className="hero-primary" data-magnetic data-spotlight href="/dashboard">Open intelligence <ArrowRight size={17} /></Link></div></div>
+      <div className="editorial-side editorial-side-right"><p>From raw member data<br />to high-context introductions.</p><span><b>94%</b> data readiness</span></div>
+      <svg className="landing-relationship-path" viewBox="0 0 1100 420" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="landing-path-gradient" x1="0" x2="1"><stop offset="0" stopColor="#8d421f" stopOpacity=".28" /><stop offset=".45" stopColor="#e47737" /><stop offset="1" stopColor="#f1c86b" stopOpacity=".28" /></linearGradient></defs><path pathLength="1" d="M80 270 C 245 75, 405 360, 585 205 S 875 85, 1020 235" /></svg>
+      <MetricFloat className="float-people" value="72" label="People" detail="Relationship graph" /><MetricFloat className="float-applicants" value="34" label="Applicants" detail="Under review" /><MetricFloat className="float-intros" value="17" label="Introductions" detail="High-signal matches" />
+      <div className="landing-path-caption"><span>People</span><ArrowRight size={13} /><span>Context</span><ArrowRight size={13} /><span>Matching</span><ArrowRight size={13} /><span>Introduction</span></div>
     </section>
-
-    <section className="dashboard-grid">
-      <div className="card span-2"><div className="card-header"><div><p className="eyebrow">Portfolio view</p><h2>Applicant-fit distribution</h2></div><Badge tone="neutral">Prioritization aid</Badge></div><FitDistribution applicants={applicants} /><p className="microcopy">Scores rank the review queue; they do not replace operator judgment.</p></div>
-      <div className="card health-card"><div className="card-header"><div><p className="eyebrow">Dataset health</p><h2>{completeness}% complete</h2></div><span className="health-score">{completeness}</span></div><ProgressBar value={completeness} tone={completeness > 75 ? "green" : "amber"} /><div className="health-list"><span><i className="dot green" />{people.filter((p) => p.completenessScore >= 80).length} healthy profiles</span><span><i className="dot amber" />{incomplete.length} need enrichment</span><span><i className="dot red" />{people.filter((p) => p.dataIssues.some((i) => i.includes("Invalid") || i.includes("Suspicious"))).length} contact warnings</span></div></div>
-      <div className="card span-2"><div className="card-header"><div><p className="eyebrow">Operator queue</p><h2>Needs attention</h2></div><Link className="text-link" href="/data-quality">Review all <ArrowRight size={15} /></Link></div><div className="attention-list"><AttentionItem href="/data-quality?tab=exact" count={duplicates.filter((d) => d.level === "exact" && d.status === "pending").length} label="Exact duplicate candidates" detail="Shared email, LinkedIn URL or phone" tone="danger" /><AttentionItem href="/data-quality?tab=incomplete" count={incomplete.length} label="Incomplete profiles" detail="Important context is missing" tone="warn" /><AttentionItem href="/data-quality?tab=contact" count={people.filter((p) => p.dataIssues.some((i) => i.includes("Invalid") || i.includes("Suspicious"))).length} label="Suspicious contact details" detail="Validate before reaching out" tone="neutral" /></div></div>
-      <div className="card"><div className="card-header"><div><p className="eyebrow">Latest processing</p><h2>Recently processed</h2></div></div><div className="recent-people">{people.slice().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 3).map((person) => <PersonLink key={person.id} person={person} compact />)}</div><div className="subsection-title">Audit trail</div><div className="activity-list">{activity.slice(0, 3).map((event) => <div key={event.id}><span className="activity-icon">{event.type === "introduction" ? "↗" : event.type === "duplicate" ? "≋" : "✓"}</span><div><strong>{event.title}</strong><p>{event.detail}</p><small>{new Date(event.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</small></div></div>)}</div></div>
-    </section>
-  </div>;
+    <footer className="landing-meta"><span>Applicant intelligence</span><i /><span>Relationship graph</span><i /><span>Human review</span><a href="#product" aria-label="Explore Offline Intelligence"><ArrowDown size={14} /></a></footer>
+  </main>;
 }
 
-function Metric({ label, value, detail, icon, tone = "default" }: { label: string; value: number; detail: string; icon: React.ReactNode; tone?: string }) { return <div className={`metric-card metric-${tone}`}><span className="metric-icon">{icon}</span><div><small>{label}</small><strong>{value || "—"}</strong><p>{detail}</p></div></div>; }
-
-function FitDistribution({ applicants }: { applicants: ReturnType<typeof useApp>["people"] }) {
-  const bands = [{ label: "Strong fit", min: 80, max: 100, color: "green" }, { label: "Potential fit", min: 65, max: 79, color: "amber" }, { label: "Needs review", min: 45, max: 64, color: "orange" }, { label: "Low fit", min: 0, max: 44, color: "gray" }];
-  return <div className="distribution">{bands.map((band) => { const count = applicants.filter((p) => (p.fitScore || 0) >= band.min && (p.fitScore || 0) <= band.max).length; const width = applicants.length ? Math.max(4, count / applicants.length * 100) : 0; return <div key={band.label}><span>{band.label}<small>{band.min}–{band.max}</small></span><div className="dist-track"><i className={`dist-${band.color}`} style={{ width: `${width}%` }} /></div><strong>{count}</strong></div>; })}</div>;
+function MetricFloat({ className, value, label, detail }: { className: string; value: string; label: string; detail: string }) {
+  return <div className={`landing-float ${className}`}><small>{label}</small><strong>{value}</strong><span>{detail}</span></div>;
 }
-
-function AttentionItem({ href, count, label, detail, tone }: { href: string; count: number; label: string; detail: string; tone: string }) { return <Link href={href}><span className={`attention-count ${tone}`}>{count}</span><span><strong>{label}</strong><small>{detail}</small></span><ArrowRight size={17} /></Link>; }

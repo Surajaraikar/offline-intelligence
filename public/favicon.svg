@@ -1,4 +1,7 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="3.5" y="3.5" width="57" height="57" rx="17" fill="#242520" stroke="#77786D"/>
-  <text x="32" y="45" text-anchor="middle" font-family="Georgia, serif" font-size="39" fill="#E6B177">O</text>
+  <defs><linearGradient id="c" x1="10" y1="8" x2="54" y2="56"><stop stop-color="#F2A467"/><stop offset=".45" stop-color="#D7783D"/><stop offset="1" stop-color="#A94E25"/></linearGradient></defs>
+  <rect x="2" y="2" width="60" height="60" rx="19" fill="#15110F" stroke="#51301F"/>
+  <path d="M47 15A24 24 0 1 1 39 9" stroke="url(#c)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M18 37c5-12 16-18 29-9" stroke="url(#c)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="17" cy="38" r="4" fill="url(#c)"/><circle cx="48" cy="27" r="4" fill="#FFD59B"/>
 </svg>

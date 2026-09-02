@@ -1,9 +1,10 @@
 "use client";
 
-import { AlertCircle, CheckCircle2, ChevronRight, Sparkles } from "lucide-react";
+import { AlertCircle, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import type { Person } from "@/types";
 import { fitBand } from "@/lib/scoring";
+import { OfflineMark } from "@/components/brand/OfflineMark";
 
 export function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone?: "neutral" | "good" | "warn" | "danger" | "ai" }) {
   return <span className={`badge badge-${tone}`}>{children}</span>;
@@ -24,7 +25,7 @@ export function ProgressBar({ value, tone = "amber" }: { value: number; tone?: "
 }
 
 export function EmptyState({ title, body }: { title: string; body: string }) {
-  return <div className="empty-state"><CheckCircle2 size={24} /><h3>{title}</h3><p>{body}</p></div>;
+  return <div className="empty-state"><OfflineMark size={42} animated={false} /><h3>{title}</h3><p>{body}</p></div>;
 }
 
 export function PageHeader({ eyebrow, title, description, action }: { eyebrow?: string; title: string; description: string; action?: React.ReactNode }) {
@@ -37,3 +38,11 @@ export function PersonLink({ person, compact = false }: { person: Person; compac
 
 export function AiLabel() { return <Badge tone="ai"><Sparkles size={12} /> AI-derived</Badge>; }
 export function DataIssue({ children }: { children: React.ReactNode }) { return <span className="issue"><AlertCircle size={14} />{children}</span>; }
+
+export function ScoreRing({ value, label, tone = "copper", size = 82 }: { value: number; label?: string; tone?: "copper" | "green"; size?: number }) {
+  const radius = 29;
+  return <div className={`score-ring score-ring-${tone}`} style={{ width: size, height: size }} role="img" aria-label={`${label || "Score"}: ${value}%`}>
+    <svg viewBox="0 0 72 72" aria-hidden="true"><defs><linearGradient id={`score-${tone}`} x1="10" y1="8" x2="62" y2="64"><stop stopColor={tone === "green" ? "#86D99E" : "#F2B278"} /><stop offset=".5" stopColor={tone === "green" ? "#58B779" : "#DD7C3E"} /><stop offset="1" stopColor={tone === "green" ? "#2E7A50" : "#A64D25"} /></linearGradient></defs><circle className="score-ring-track" cx="36" cy="36" r={radius} /><circle className="score-ring-value" cx="36" cy="36" r={radius} pathLength="100" style={{ strokeDasharray: `${value} 100` }} /></svg>
+    <strong>{value}<small>%</small></strong>{label && <span>{label}</span>}
+  </div>;
+}

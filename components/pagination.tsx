@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { paginate, paginationTokens } from "@/lib/pagination";
+import { FilterSelect } from "@/components/filter-select";
 
 export function usePagination<T>(items: readonly T[], pageSize: number) {
   const [requestedPage, setRequestedPage] = useState(1);
@@ -34,6 +35,6 @@ export function Pagination({ page, pageSize, totalItems, totalPages, onPageChang
       <div className="pagination-pages">{tokens.map((token) => typeof token === "number" ? <button type="button" key={token} aria-label={`Page ${token}`} aria-current={token === page ? "page" : undefined} className={token === page ? "active" : ""} onClick={() => onPageChange(token)}>{token}</button> : <span key={token} className="pagination-ellipsis" aria-hidden="true">…</span>)}</div>
       <button className="pagination-nav" type="button" onClick={() => onPageChange(page + 1)} disabled={page === totalPages} aria-label={`Next page of ${itemLabel}`}><span>Next</span><ChevronRight size={15} /></button>
     </div>
-    {pageSizeOptions && onPageSizeChange && <label className="page-size-control"><span>Rows</span><select aria-label={`Rows per page for ${itemLabel}`} value={pageSize} onChange={(event) => onPageSizeChange(Number(event.target.value))}>{pageSizeOptions.map((size) => <option value={size} key={size}>{size}</option>)}</select></label>}
+    {pageSizeOptions && onPageSizeChange && <div className="page-size-control"><span>Rows</span><FilterSelect compact label={`Rows per page for ${itemLabel}`} value={String(pageSize)} onChange={(value) => onPageSizeChange(Number(value))} options={pageSizeOptions.map((size) => ({ value: String(size), label: String(size) }))} /></div>}
   </nav>;
 }
